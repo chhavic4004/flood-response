@@ -1,0 +1,3 @@
+id,name,lat,lng,capacity,operational,stock_medicine,stock_food,stock_blanket
+w1,Guwahati_Camp1,26.1445,91.7362,1000,True,700,900,500
+w2,Dibrugarh_Camp,27.4734,94.9186,800,True,500,600,400

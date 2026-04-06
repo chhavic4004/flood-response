@@ -1,0 +1,51 @@
+id,name,lat,lng,pop,urgencylevel,request_type,wait_time
+v1,Bhehbari,26.249671,91.732408,2187,0.459,medicine,2.25
+v2,Khepkuchi,26.186174,91.661492,1849,0.398,medicine,2.25
+v3,Mahajan Para,26.264769,91.632308,1312,0.254,medicine,2.0
+v4,Ganakjhar,26.352303,91.761168,1716,0.366,medicine,2.25
+v5,Dhulara,26.176585,91.8031,915,0.19,medicine,2.25
+v6,Bardangeri Kuchi,26.176586,91.793128,2495,0.482,medicine,2.0
+v7,Pubpar Lokra,26.357921,91.616078,914,0.189,medicine,1.5
+v8,Gorka,26.276743,91.669079,933,0.191,medicine,1.5
+v9,Jaikuchi,26.153053,91.733126,1458,0.309,medicine,1.55
+v10,Pubpar Jatia Bhangra,26.254256,91.797555,2483,0.506,medicine,1.5
+v11,Jatia Bhangra,26.153658,91.652083,3086,0.645,medicine,2.1
+v12,Na-Satra,26.153427,91.681434,880,0.193,medicine,2.1
+v13,Sutar Gaon,26.224196,91.589367,1218,0.257,medicine,1.5
+v14,Dhulura Lira (Dhuliara),26.008672,91.580379,605,0.133,medicine,2.25
+v15,Mahipal Kuchi,26.027508,91.781253,769,0.164,medicine,2.1
+v16,Barigaon,26.143771,91.835624,202,0.1,medicine,1.75
+v17,Sonari Sal,26.098717,91.692799,1191,0.248,medicine,1.5
+v18,Balikuchi,26.231425,91.800353,515,0.1,medicine,1.55
+v19,Loch,26.109198,91.736164,2057,0.429,medicine,1.5
+v20,Bangal Gaon,26.05877,91.635488,788,0.166,medicine,1.5
+v21,Muktapur,26.346565,91.73614,2058,0.467,medicine,1.35
+v22,Makundapur,26.177422,91.853804,971,0.215,medicine,2.0
+v23,Belkona,26.206753,91.696417,765,0.169,food,2.0
+v24,Bargaon,26.057525,91.856464,2658,0.553,medicine,1.0
+v25,Tulamali,26.145562,91.438025,1961,0.378,medicine,1.0
+v26,Saledal,26.211092,91.78219,1270,0.252,medicine,1.5
+v27,Saulmari,26.084901,91.708705,805,0.157,medicine,1.5
+v28,Khepnikuchi (Khopanikuchi),26.23757,91.670099,1170,0.21,medicine,3.0
+v29,Jaljali,26.139936,91.709176,1459,0.297,medicine,3.0
+v30,Tulsibari,26.170831,91.501243,7214,0.95,medicine,3.0
+v31,Ichapur,26.139829,91.678033,2472,0.466,medicine,3.0
+v32,Halikuchi,26.385228,91.735711,1185,0.235,medicine,3.0
+v33,Bichennala,26.19865,91.847789,2756,0.552,medicine,3.0
+v34,Tarani,26.094229,91.648173,3541,0.718,medicine,2.75
+v35,Hairandhab (Hairandeb),26.282254,91.619151,1080,0.213,medicine,3.0
+v36,Kothra,26.077916,91.649824,432,0.1,medicine,3.0
+v37,Batakuchi,26.220886,91.79154,939,0.194,medicine,3.0
+v38,Jamtala,26.004033,91.732875,1550,0.312,medicine,3.0
+v39,Kararagar Bhitor,26.067181,91.647024,2063,0.397,medicine,3.0
+v40,Doloi Gaon,26.219686,91.751327,323,0.1,medicine,3.0
+v41,Bala Gaon,26.273847,91.709708,876,0.175,medicine,3.0
+v42,Tatarkuchi,26.217137,91.796864,1226,0.259,medicine,3.0
+v43,Pub-Sitara,26.188435,91.629795,571,0.122,medicine,3.0
+v44,Pachim-Sitara,26.16989,91.667234,1153,0.245,medicine,3.0
+v45,Telerana Kuchi,26.052148,91.660789,92,0.1,medicine,2.7
+v46,Goriakoth,26.128016,91.553649,1490,0.309,medicine,2.75
+v47,Alagdia,26.153936,91.729612,243,0.1,medicine,2.8
+v48,Kekohati,26.305712,91.726106,848,0.164,medicine,3.0
+v49,Bhatkuchi,26.234362,91.700511,213,0.1,medicine,3.0
+v50,Gorkuchi (Gurkuchi),26.023696,91.676541,1049,0.209,medicine,3.0

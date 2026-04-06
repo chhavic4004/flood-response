@@ -3,46 +3,10 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Clock, Info, HelpCircle } from "lucide-react"
-
-interface Village {
-  id: string
-  name: string
-  lat: number
-  lng: number
-  status: "danger" | "warning" | "safe"
-  urgencyDecay: number
-  population: number
-  supplies: string[]
-}
-
-interface Route {
-  id: string
-  from: string
-  to: string
-  status: "active" | "blocked" | "rerouted"
-  eta?: number
-}
-
-const mockVillages: Village[] = [
-  { id: "v1", name: "Dhubri Town", lat: 26.0219, lng: 89.9820, status: "danger", urgencyDecay: 0.9, population: 78520, supplies: ["Medicine", "Food"] },
-  { id: "v2", name: "Golakganj", lat: 26.1024, lng: 89.8369, status: "warning", urgencyDecay: 0.6, population: 25340, supplies: ["Water"] },
-  { id: "v3", name: "Bilasipara", lat: 26.2311, lng: 90.2321, status: "safe", urgencyDecay: 0.2, population: 18920, supplies: [] },
-  { id: "v4", name: "Gauripur", lat: 26.0833, lng: 89.9667, status: "danger", urgencyDecay: 0.85, population: 32100, supplies: ["Medicine", "Shelter"] },
-  { id: "v5", name: "Agomoni", lat: 26.1500, lng: 89.7833, status: "warning", urgencyDecay: 0.5, population: 12450, supplies: ["Food"] },
-  { id: "v6", name: "Chapar", lat: 26.2833, lng: 90.1667, status: "safe", urgencyDecay: 0.15, population: 8920, supplies: [] },
-  { id: "v7", name: "Sapatgram", lat: 26.3333, lng: 90.1167, status: "warning", urgencyDecay: 0.45, population: 15600, supplies: ["Water", "Food"] },
-  { id: "v8", name: "South Salmara", lat: 25.9167, lng: 90.0333, status: "danger", urgencyDecay: 0.95, population: 28900, supplies: ["Medicine", "Food", "Shelter"] },
-]
-
-const mockRoutes: Route[] = [
-  { id: "r1", from: "Dhubri Town", to: "Golakganj", status: "blocked" },
-  { id: "r2", from: "Golakganj", to: "Bilasipara", status: "active", eta: 45 },
-  { id: "r3", from: "Dhubri Town", to: "Gauripur", status: "rerouted", eta: 90 },
-  { id: "r4", from: "Gauripur", to: "Sapatgram", status: "active", eta: 30 },
-  { id: "r5", from: "Chapar", to: "Bilasipara", status: "blocked" },
-]
+import { useSimulation, type Village } from "@/lib/simulation-context"
 
 export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Village | null) => void }) {
+  const { villages, routes } = useSimulation()
   const [selectedVillage, setSelectedVillage] = useState<Village | null>(null)
   const [hoveredVillage, setHoveredVillage] = useState<string | null>(null)
   const [truckPositions, setTruckPositions] = useState<{[key: string]: number}>({})
@@ -53,7 +17,7 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
     const interval = setInterval(() => {
       setTruckPositions(prev => {
         const newPositions = { ...prev }
-        mockRoutes.forEach(route => {
+        routes.forEach(route => {
           if (route.status === "active" || route.status === "rerouted") {
             newPositions[route.id] = ((prev[route.id] || 0) + 2) % 100
           }
@@ -62,7 +26,7 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
       })
     }, 100)
     return () => clearInterval(interval)
-  }, [])
+  }, [routes])
 
   const handleVillageClick = (village: Village) => {
     setSelectedVillage(village)
@@ -126,9 +90,9 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         {/* Routes */}
-        {mockRoutes.map(route => {
-          const fromVillage = mockVillages.find(v => v.name === route.from)
-          const toVillage = mockVillages.find(v => v.name === route.to)
+        {routes.map(route => {
+          const fromVillage = villages.find(v => v.name === route.from)
+          const toVillage = villages.find(v => v.name === route.to)
           if (!fromVillage || !toVillage) return null
 
           const x1 = lngToX(fromVillage.lng)
@@ -199,7 +163,7 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
       </svg>
 
       {/* Village Markers */}
-      {mockVillages.map((village, index) => {
+      {villages.map((village, index) => {
         const x = lngToX(village.lng)
         const y = latToY(village.lat)
         const isHovered = hoveredVillage === village.id
@@ -355,20 +319,20 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
       <div className="absolute top-2 left-2 sm:top-4 sm:left-4 p-2 sm:p-4 bg-card/90 backdrop-blur-sm rounded-lg border border-border">
         <div className="text-[10px] sm:text-xs font-bold mb-1 sm:mb-2 text-foreground">Total Villages</div>
         <div className="text-2xl sm:text-4xl font-black font-mono" style={{ color: '#00FF00' }}>
-          {mockVillages.length}
+          {villages.length}
         </div>
         <div className="mt-2 sm:mt-3 flex flex-col gap-0.5 sm:gap-1 text-[10px] sm:text-xs">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#FF0000' }} />
-            <span style={{ color: '#FF0000' }}>Danger: {mockVillages.filter(v => v.status === 'danger').length}</span>
+            <span style={{ color: '#FF0000' }}>Danger: {villages.filter(v => v.status === 'danger').length}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#FFD700' }} />
-            <span style={{ color: '#FFD700' }}>Warning: {mockVillages.filter(v => v.status === 'warning').length}</span>
+            <span style={{ color: '#FFD700' }}>Warning: {villages.filter(v => v.status === 'warning').length}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#00FF00' }} />
-            <span style={{ color: '#00FF00' }}>Safe: {mockVillages.filter(v => v.status === 'safe').length}</span>
+            <span style={{ color: '#00FF00' }}>Safe: {villages.filter(v => v.status === 'safe').length}</span>
           </div>
         </div>
       </div>

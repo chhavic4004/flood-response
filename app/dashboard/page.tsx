@@ -29,8 +29,9 @@ import { PredictionsHub } from "@/components/predictions-hub"
 import { RerouteCenter } from "@/components/reroute-center"
 import { VisualizationDeck } from "@/components/visualization-deck"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SimulationProvider, useSimulation } from "@/lib/simulation-context"
 
-export default function DashboardPage() {
+function DashboardContent() {
   const [activeTab, setActiveTab] = useState("map")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -40,6 +41,17 @@ export default function DashboardPage() {
   const [rightPanel, setRightPanel] = useState<"simulator" | "queue" | "reroute">("simulator")
   const [vizFullscreen, setVizFullscreen] = useState(false)
   const [showRightPanel, setShowRightPanel] = useState(false)
+  const {
+    triggerFlood,
+    blockRoad,
+    setTimeProgress,
+    setFloodLevel,
+    activateAirFallback,
+    isolateVillage,
+    togglePlay,
+    reset,
+    isPlaying,
+  } = useSimulation()
 
   const getStatusColor = () => {
     switch (systemStatus) {
@@ -473,7 +485,17 @@ export default function DashboardPage() {
                     exit={{ opacity: 0, x: -20 }}
                     className="h-full p-4 overflow-auto"
                   >
-                    <SimulatorPanel />
+                    <SimulatorPanel
+                      onTriggerFlood={triggerFlood}
+                      onBlockRoad={() => blockRoad()}
+                      onTimeChange={setTimeProgress}
+                      onFloodLevelChange={setFloodLevel}
+                      onAirFallback={activateAirFallback}
+                      onIsolateVillage={isolateVillage}
+                      onTogglePlay={togglePlay}
+                      onReset={reset}
+                      isSimulating={isPlaying}
+                    />
                   </motion.div>
                 )}
                 {rightPanel === "queue" && (
@@ -559,7 +581,17 @@ export default function DashboardPage() {
                   <div className="flex-1 overflow-auto">
                     {rightPanel === "simulator" && (
                       <div className="p-4">
-                        <SimulatorPanel />
+                        <SimulatorPanel
+                          onTriggerFlood={triggerFlood}
+                          onBlockRoad={() => blockRoad()}
+                          onTimeChange={setTimeProgress}
+                          onFloodLevelChange={setFloodLevel}
+                          onAirFallback={activateAirFallback}
+                          onIsolateVillage={isolateVillage}
+                          onTogglePlay={togglePlay}
+                          onReset={reset}
+                          isSimulating={isPlaying}
+                        />
                       </div>
                     )}
                     {rightPanel === "queue" && <PriorityQueue />}
@@ -572,5 +604,13 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <SimulationProvider>
+      <DashboardContent />
+    </SimulationProvider>
   )
 }

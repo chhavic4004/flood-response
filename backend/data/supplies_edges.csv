@@ -1,0 +1,4 @@
+from_id,to_id,cost,dist,time,isblocked
+s1,w1,5,8,10,False
+s2,w2,6,9,11,False
+s3,w1,7,10,12,False

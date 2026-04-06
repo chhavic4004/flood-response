@@ -21,7 +21,11 @@ interface SimulatorPanelProps {
   onTriggerFlood?: () => void
   onBlockRoad?: () => void
   onTimeChange?: (time: number) => void
+  onFloodLevelChange?: (level: number) => void
   onAirFallback?: () => void
+  onIsolateVillage?: (villageId: string) => void
+  onTogglePlay?: () => void
+  onReset?: () => void
   isSimulating?: boolean
 }
 
@@ -29,7 +33,12 @@ export function SimulatorPanel({
   onTriggerFlood,
   onBlockRoad,
   onTimeChange,
+  onFloodLevelChange,
   onAirFallback,
+  onIsolateVillage,
+  onTogglePlay,
+  onReset,
+  isSimulating,
 }: SimulatorPanelProps) {
   const [floodLevel, setFloodLevel] = useState([30])
   const [timeProgress, setTimeProgress] = useState([0])
@@ -50,6 +59,27 @@ export function SimulatorPanel({
     onBlockRoad?.()
   }
 
+  const handleIsolateVillage = (villageName: string) => {
+    onIsolateVillage?.(villageName)
+    setSeverity("critical")
+  }
+
+  const handleReset = () => {
+    setTimeProgress([0])
+    setFloodLevel([30])
+    setSeverity("low")
+    setBlockedRoads(2)
+    setIsPlaying(false)
+    onReset?.()
+  }
+
+  const handlePlayToggle = () => {
+    setIsPlaying(prev => !prev)
+    onTogglePlay?.()
+  }
+
+  const isRunning = isSimulating ?? isPlaying
+
   const handleTimeChange = (value: number[]) => {
     setTimeProgress(value)
     
@@ -60,6 +90,11 @@ export function SimulatorPanel({
     else setSeverity("critical")
     
     onTimeChange?.(value[0])
+  }
+
+  const handleFloodLevelChange = (value: number[]) => {
+    setFloodLevel(value)
+    onFloodLevelChange?.(value[0])
   }
 
   const getSeverityColor = () => {
@@ -222,7 +257,7 @@ export function SimulatorPanel({
           </div>
           <Slider
             value={floodLevel}
-            onValueChange={setFloodLevel}
+            onValueChange={handleFloodLevelChange}
             max={100}
             step={1}
             className="w-full"
@@ -245,6 +280,7 @@ export function SimulatorPanel({
             {["Dhubri", "Gauripur", "Golakganj", "Bilasipara"].map(village => (
               <motion.button
                 key={village}
+                onClick={() => handleIsolateVillage(village)}
                 className="px-2 py-1 rounded text-[10px] font-medium border transition-colors"
                 style={{
                   borderColor: 'var(--border)',
@@ -286,22 +322,17 @@ export function SimulatorPanel({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              setTimeProgress([0])
-              setFloodLevel([30])
-              setSeverity("low")
-              setBlockedRoads(2)
-            }}
+            onClick={handleReset}
           >
             <RotateCcw className="w-4 h-4" />
           </Button>
           <Button
-            variant={isPlaying ? "destructive" : "default"}
+            variant={isRunning ? "destructive" : "default"}
             size="sm"
-            onClick={() => setIsPlaying(!isPlaying)}
+            onClick={handlePlayToggle}
             className="px-6"
           >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </Button>
         </div>
       </div>
