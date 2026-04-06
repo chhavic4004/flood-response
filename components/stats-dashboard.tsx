@@ -321,7 +321,7 @@ export function StatsDashboard() {
                   animate={{ 
                     opacity: 1, 
                     x: 0,
-                    backgroundColor: flashingRow === item.id ? 'rgba(255, 0, 0, 0.2)' : 'transparent'
+                    backgroundColor: flashingRow === item.id ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0)'
                   }}
                   transition={{ delay: index * 0.1 }}
                 >
