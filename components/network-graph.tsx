@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { Info, HelpCircle } from "lucide-react"
 
 interface Node {
   id: string
@@ -50,7 +51,7 @@ export function NetworkGraph({ onNodeSelect }: { onNodeSelect?: (node: Node | nu
   const [selectedNode, setSelectedNode] = useState<Node | null>(null)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [rippleNodes, setRippleNodes] = useState<string[]>([])
-  const svgRef = useRef<SVGSVGElement>(null)
+  const [showHelp, setShowHelp] = useState(false)
 
   // BFS ripple animation for blocked routes
   useEffect(() => {
@@ -111,7 +112,7 @@ export function NetworkGraph({ onNodeSelect }: { onNodeSelect?: (node: Node | nu
   }
 
   return (
-    <div className="relative w-full h-full min-h-[400px] bg-[#0a1628] rounded-xl overflow-hidden border border-border">
+    <div className="relative w-full h-full min-h-[300px] sm:min-h-[400px] bg-[#0a1628] rounded-xl overflow-hidden border border-border">
       {/* Background grid */}
       <div 
         className="absolute inset-0 opacity-10"
@@ -124,7 +125,6 @@ export function NetworkGraph({ onNodeSelect }: { onNodeSelect?: (node: Node | nu
       />
 
       <svg 
-        ref={svgRef}
         className="w-full h-full"
         viewBox="0 0 600 450"
         preserveAspectRatio="xMidYMid meet"
@@ -203,7 +203,7 @@ export function NetworkGraph({ onNodeSelect }: { onNodeSelect?: (node: Node | nu
         })}
 
         {/* Nodes */}
-        {mockNodes.map((node, index) => {
+        {mockNodes.map((node) => {
           const isHovered = hoveredNode === node.id
           const isSelected = selectedNode?.id === node.id
           const isRippling = rippleNodes.includes(node.id)
@@ -326,25 +326,76 @@ export function NetworkGraph({ onNodeSelect }: { onNodeSelect?: (node: Node | nu
         })}
       </svg>
 
-      {/* Legend */}
-      <div className="absolute bottom-4 right-4 p-3 bg-card/90 backdrop-blur-sm rounded-lg border border-border text-xs">
+      {/* Help Button */}
+      <button
+        onClick={() => setShowHelp(!showHelp)}
+        className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 rounded-lg bg-card/90 border border-border hover:bg-card transition-colors z-20"
+      >
+        <HelpCircle className="w-4 h-4 text-muted-foreground" />
+      </button>
+
+      {/* Help Panel */}
+      <AnimatePresence>
+        {showHelp && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="absolute top-12 right-2 sm:top-14 sm:right-4 p-3 sm:p-4 bg-card/95 backdrop-blur-sm rounded-lg border border-border z-20 max-w-[200px] sm:max-w-xs"
+          >
+            <div className="text-xs sm:text-sm font-bold mb-2 text-foreground flex items-center gap-2">
+              <Info className="w-4 h-4" />
+              Understanding the Network
+            </div>
+            <div className="space-y-2 text-[10px] sm:text-xs text-muted-foreground">
+              <p><strong>Nodes</strong> represent locations in the supply chain.</p>
+              <p><strong>H (Hub)</strong> - Central distribution point for supplies.</p>
+              <p><strong>W (Warehouse)</strong> - Storage facility with supplies.</p>
+              <p><strong>Small dots</strong> - Villages needing supplies.</p>
+              <p><strong>Lines</strong> show supply connections between nodes.</p>
+              <p><strong>Line thickness</strong> indicates traffic load on that route.</p>
+              <p><strong>Dashed yellow lines</strong> are satellite/air drop routes.</p>
+              <p><strong>Ripples</strong> show impact spreading from danger zones.</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Legend - Responsive */}
+      <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 p-2 sm:p-3 bg-card/90 backdrop-blur-sm rounded-lg border border-border text-[10px] sm:text-xs max-w-[140px] sm:max-w-none">
         <div className="font-bold mb-2 text-foreground">Network Legend</div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1 sm:gap-1.5">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#FF0000' }} />
+            <div className="w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center text-[8px] font-bold" style={{ backgroundColor: '#FFD700', color: '#000' }}>H</div>
+            <span className="text-muted-foreground">Hub (Distribution)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3.5 h-3.5 rounded-full flex-shrink-0 flex items-center justify-center text-[8px] font-bold" style={{ backgroundColor: '#00FF00', color: '#000' }}>W</div>
+            <span className="text-muted-foreground">Warehouse</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#FF0000' }} />
             <span className="text-muted-foreground">High Urgency</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FFD700' }} />
+            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#FFD700' }} />
             <span className="text-muted-foreground">Moderate</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#00FF00' }} />
+            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#00FF00' }} />
             <span className="text-muted-foreground">Stable</span>
           </div>
           <div className="flex items-center gap-2 mt-1 pt-1 border-t border-border">
-            <div className="w-5 h-0.5 bg-[#FFD700]" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #FFD700 0, #FFD700 4px, transparent 4px, transparent 8px)' }} />
-            <span className="text-muted-foreground">Satellite Link</span>
+            <div className="w-4 sm:w-5 h-0.5" style={{ backgroundColor: '#00FF00' }} />
+            <span className="text-muted-foreground">Active</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 sm:w-5 h-0.5 bg-[#FFD700]" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #FFD700 0, #FFD700 4px, transparent 4px, transparent 8px)' }} />
+            <span className="text-muted-foreground">Satellite</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 sm:w-5 h-0.5 bg-[#FF0000]" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #FF0000 0, #FF0000 2px, transparent 2px, transparent 4px)' }} />
+            <span className="text-muted-foreground">Blocked</span>
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Truck, AlertTriangle, CheckCircle2, Clock } from "lucide-react"
+import { Clock, Info, HelpCircle } from "lucide-react"
 
 interface Village {
   id: string
@@ -46,6 +46,7 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
   const [selectedVillage, setSelectedVillage] = useState<Village | null>(null)
   const [hoveredVillage, setHoveredVillage] = useState<string | null>(null)
   const [truckPositions, setTruckPositions] = useState<{[key: string]: number}>({})
+  const [showHelp, setShowHelp] = useState(false)
 
   // Animate trucks along routes
   useEffect(() => {
@@ -103,7 +104,7 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
   }
 
   return (
-    <div className="relative w-full h-full min-h-[500px] bg-[#0a1628] rounded-xl overflow-hidden border border-border">
+    <div className="relative w-full h-full min-h-[300px] sm:min-h-[500px] bg-[#0a1628] rounded-xl overflow-hidden border border-border">
       {/* Background Map Image */}
       <div 
         className="absolute inset-0 opacity-30"
@@ -203,8 +204,8 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
         const y = latToY(village.lat)
         const isHovered = hoveredVillage === village.id
         const isSelected = selectedVillage?.id === village.id
-        const size = village.status === "danger" ? 20 + village.urgencyDecay * 15 : 
-                    village.status === "warning" ? 15 + village.urgencyDecay * 10 : 12
+        const size = village.status === "danger" ? 16 + village.urgencyDecay * 10 : 
+                    village.status === "warning" ? 12 + village.urgencyDecay * 8 : 10
 
         return (
           <motion.div
@@ -254,19 +255,19 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-card/95 backdrop-blur-sm rounded-lg border border-border whitespace-nowrap z-50"
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-card/95 backdrop-blur-sm rounded-lg border border-border whitespace-nowrap z-50"
                   style={{
                     borderColor: getStatusColor(village.status),
                   }}
                 >
-                  <div className="text-sm font-bold" style={{ color: getStatusColor(village.status) }}>
+                  <div className="text-xs sm:text-sm font-bold" style={{ color: getStatusColor(village.status) }}>
                     {village.name}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-[10px] sm:text-xs text-muted-foreground">
                     Pop: {village.population.toLocaleString()}
                   </div>
                   {village.supplies.length > 0 && (
-                    <div className="text-xs mt-1" style={{ color: 'var(--danger)' }}>
+                    <div className="text-[10px] sm:text-xs mt-1" style={{ color: '#FF0000' }}>
                       Needs: {village.supplies.join(", ")}
                     </div>
                   )}
@@ -277,44 +278,86 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
         )
       })}
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 p-4 bg-card/90 backdrop-blur-sm rounded-lg border border-border">
-        <div className="text-xs font-bold mb-3 text-foreground">FloodGate Legend</div>
-        <div className="flex flex-col gap-2 text-xs">
+      {/* Help Button */}
+      <button
+        onClick={() => setShowHelp(!showHelp)}
+        className="absolute top-2 right-2 sm:top-4 sm:right-4 p-2 rounded-lg bg-card/90 border border-border hover:bg-card transition-colors z-20"
+      >
+        <HelpCircle className="w-4 h-4 text-muted-foreground" />
+      </button>
+
+      {/* Help Panel */}
+      <AnimatePresence>
+        {showHelp && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="absolute top-12 right-2 sm:top-14 sm:right-4 p-3 sm:p-4 bg-card/95 backdrop-blur-sm rounded-lg border border-border z-20 max-w-[200px] sm:max-w-xs"
+          >
+            <div className="text-xs sm:text-sm font-bold mb-2 text-foreground flex items-center gap-2">
+              <Info className="w-4 h-4" />
+              How to Read This Map
+            </div>
+            <div className="space-y-2 text-[10px] sm:text-xs text-muted-foreground">
+              <p><strong>Dots</strong> represent villages. Click to see details.</p>
+              <p><strong>Dot size</strong> indicates urgency level - larger = more urgent.</p>
+              <p><strong>Pulsing red dots</strong> need immediate assistance.</p>
+              <p><strong>Lines</strong> show supply routes between villages.</p>
+              <p><strong>Moving green dots</strong> on routes are supply trucks in transit.</p>
+              <p><strong>X marks</strong> indicate blocked/flooded routes.</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Legend - Responsive positioning */}
+      <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 p-2 sm:p-4 bg-card/90 backdrop-blur-sm rounded-lg border border-border max-w-[150px] sm:max-w-none">
+        <div className="text-[10px] sm:text-xs font-bold mb-2 sm:mb-3 text-foreground">Village Status Legend</div>
+        <div className="flex flex-col gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#00FF00' }} />
-            <span className="text-muted-foreground">Status: Normal</span>
+            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#FF0000', boxShadow: '0 0 6px rgba(255,0,0,0.6)' }} />
+            <div>
+              <span className="text-muted-foreground font-medium" style={{ color: '#FF0000' }}>Danger</span>
+              <span className="text-muted-foreground hidden sm:inline"> - Critical flood, needs rescue</span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FFD700' }} />
-            <span className="text-muted-foreground">Status: Stage 2</span>
+            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#FFD700', boxShadow: '0 0 6px rgba(255,215,0,0.6)' }} />
+            <div>
+              <span className="text-muted-foreground font-medium" style={{ color: '#FFD700' }}>Warning</span>
+              <span className="text-muted-foreground hidden sm:inline"> - Rising water, monitor</span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FF0000' }} />
-            <span className="text-muted-foreground">Status: Stage 3</span>
+            <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#00FF00', boxShadow: '0 0 6px rgba(0,255,0,0.6)' }} />
+            <div>
+              <span className="text-muted-foreground font-medium" style={{ color: '#00FF00' }}>Safe</span>
+              <span className="text-muted-foreground hidden sm:inline"> - Stable conditions</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border">
-            <div className="w-6 h-0.5" style={{ backgroundColor: '#00FF00' }} />
+          <div className="flex items-center gap-2 mt-1 sm:mt-2 pt-1 sm:pt-2 border-t border-border">
+            <div className="w-5 sm:w-6 h-0.5" style={{ backgroundColor: '#00FF00' }} />
             <span className="text-muted-foreground">Active Route</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-0.5" style={{ backgroundColor: '#FFD700', backgroundImage: 'repeating-linear-gradient(90deg, #FFD700 0, #FFD700 4px, transparent 4px, transparent 8px)' }} />
+            <div className="w-5 sm:w-6 h-0.5" style={{ backgroundColor: '#FFD700', backgroundImage: 'repeating-linear-gradient(90deg, #FFD700 0, #FFD700 4px, transparent 4px, transparent 8px)' }} />
             <span className="text-muted-foreground">Rerouted</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-0.5" style={{ backgroundColor: '#FF0000', backgroundImage: 'repeating-linear-gradient(90deg, #FF0000 0, #FF0000 2px, transparent 2px, transparent 4px)' }} />
+            <div className="w-5 sm:w-6 h-0.5" style={{ backgroundColor: '#FF0000', backgroundImage: 'repeating-linear-gradient(90deg, #FF0000 0, #FF0000 2px, transparent 2px, transparent 4px)' }} />
             <span className="text-muted-foreground">Blocked</span>
           </div>
         </div>
       </div>
 
-      {/* Mini Stats */}
-      <div className="absolute top-4 left-4 p-4 bg-card/90 backdrop-blur-sm rounded-lg border border-border">
-        <div className="text-xs font-bold mb-2 text-foreground">Total Gate</div>
-        <div className="text-4xl font-black font-mono" style={{ color: 'var(--safe)' }}>
+      {/* Mini Stats - Responsive */}
+      <div className="absolute top-2 left-2 sm:top-4 sm:left-4 p-2 sm:p-4 bg-card/90 backdrop-blur-sm rounded-lg border border-border">
+        <div className="text-[10px] sm:text-xs font-bold mb-1 sm:mb-2 text-foreground">Total Villages</div>
+        <div className="text-2xl sm:text-4xl font-black font-mono" style={{ color: '#00FF00' }}>
           {mockVillages.length}
         </div>
-        <div className="mt-3 flex flex-col gap-1 text-xs">
+        <div className="mt-2 sm:mt-3 flex flex-col gap-0.5 sm:gap-1 text-[10px] sm:text-xs">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#FF0000' }} />
             <span style={{ color: '#FF0000' }}>Danger: {mockVillages.filter(v => v.status === 'danger').length}</span>
@@ -330,8 +373,8 @@ export function FloodMap({ onVillageSelect }: { onVillageSelect?: (village: Vill
         </div>
       </div>
 
-      {/* Last Update */}
-      <div className="absolute top-4 right-4 px-3 py-2 bg-card/90 backdrop-blur-sm rounded-lg border border-border text-xs text-muted-foreground">
+      {/* Last Update - Hidden on very small screens */}
+      <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 px-2 sm:px-3 py-1 sm:py-2 bg-card/90 backdrop-blur-sm rounded-lg border border-border text-[10px] sm:text-xs text-muted-foreground hidden xs:block">
         <Clock className="inline-block w-3 h-3 mr-1" />
         Last Update: {new Date().toLocaleTimeString()}
       </div>
