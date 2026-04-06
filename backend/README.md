@@ -71,6 +71,21 @@ Then load into TigerGraph:
 - Docker helper:
    - `./deploy.ps1 -Docker`
 
+## Deploying On Render
+1. Create a new Web Service in Render from this GitHub repo.
+2. Use the repo root blueprint at `render.yaml` or set manually:
+   - Root Directory: `backend`
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+3. Add env vars in Render:
+   - `TG_HOST`
+   - `TG_GRAPHNAME`
+   - `TG_TOKEN` or `TG_USERNAME` + `TG_PASSWORD`
+   - `CORS_ORIGINS`
+4. Deploy and verify:
+   - `GET /health`
+   - `GET /storage/status`
+
 ## TigerGraph Setup
 1. Open TigerGraph GSQL shell.
 2. Run commands from `schema.sql`.
