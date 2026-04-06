@@ -233,8 +233,8 @@ export function StatsDashboard() {
         <div className="p-4 rounded-xl bg-card/50 border border-border">
           <h4 className="text-sm font-bold mb-4 text-foreground">Supply Distribution</h4>
           <div className="flex items-center gap-4">
-            <ResponsiveContainer width={120} height={120}>
-              <PieChart>
+            <div className="w-[120px] h-[120px]">
+              <PieChart width={120} height={120}>
                 <Pie
                   data={pieData}
                   cx="50%"
@@ -249,7 +249,7 @@ export function StatsDashboard() {
                   ))}
                 </Pie>
               </PieChart>
-            </ResponsiveContainer>
+            </div>
             <div className="flex-1 space-y-2">
               {pieData.map(item => (
                 <div key={item.name} className="flex items-center justify-between text-xs">

@@ -120,13 +120,16 @@ export default function LandingPage() {
                 onClick={() => isActive && setSelectedDisaster(disaster.id)}
                 disabled={!isActive}
                 className={`
-                  relative p-6 rounded-xl border-2 transition-all duration-300
+                  relative p-6 rounded-xl border-2
                   ${isActive ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}
                   ${isSelected 
-                    ? 'border-[#FF0000] bg-[#FF0000]/10 shadow-[0_0_30px_rgba(255,0,0,0.3)]' 
-                    : 'border-border bg-card/50 hover:border-[#FFD700]/50'
+                    ? 'border-[#FF0000] shadow-[0_0_30px_rgba(255,0,0,0.3)]' 
+                    : 'border-[#2a2a3a] hover:border-[#FFD700]/50'
                   }
                 `}
+                style={{
+                  backgroundColor: isSelected ? 'rgba(255, 0, 0, 0.1)' : 'rgba(26, 26, 40, 0.5)',
+                }}
                 whileHover={isActive ? { scale: 1.02 } : {}}
                 whileTap={isActive ? { scale: 0.98 } : {}}
                 initial={{ opacity: 0, y: 20 }}
